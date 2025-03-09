@@ -4,8 +4,8 @@ import com.talleresdeprogramacion.dto.DishDTO;
 import com.talleresdeprogramacion.model.Dish;
 import com.talleresdeprogramacion.service.DishService;
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.server.reactive.ServerHttpRequest;
@@ -17,11 +17,16 @@ import java.net.URI;
 
 @RestController
 @RequestMapping("/dishes")
-@RequiredArgsConstructor
 public class DishController {
 
     private final DishService dishService;
+
     private final ModelMapper modelMapper;
+
+    public DishController(DishService dishService, @Qualifier("defaultMapper") ModelMapper modelMapper) {
+        this.dishService = dishService;
+        this.modelMapper = modelMapper;
+    }
 
     @GetMapping
     public Mono<ResponseEntity<Flux<DishDTO>>> findAll(){

@@ -10,6 +10,7 @@ public abstract class GenericCrudImpl<T, ID> implements GenericCrud<T, ID> {
     protected abstract GenericRepository<T, ID> getRepository();
     @Override
     public Mono<T> save(T t) {
+
         return getRepository().save(t);
     }
 

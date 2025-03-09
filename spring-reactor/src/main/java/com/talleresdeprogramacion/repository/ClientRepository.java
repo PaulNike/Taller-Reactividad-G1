@@ -5,6 +5,6 @@ import reactor.core.publisher.Mono;
 
 public interface ClientRepository extends GenericRepository<Client, String> {
 
-    Mono<Client> findByFirtsname(String name);
+    Mono<Client> findByFirstName(String name);
 }
 

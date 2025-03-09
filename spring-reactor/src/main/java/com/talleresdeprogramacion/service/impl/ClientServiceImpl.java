@@ -21,6 +21,6 @@ public class ClientServiceImpl extends GenericCrudImpl<Client, String> implement
     }
     @Override
     public Mono<Client> findByName(String string) {
-        return clientRepository.findByFirtsname(string);
+        return clientRepository.findByFirstName(string);
     }
 }

@@ -1,25 +1,44 @@
 package com.talleresdeprogramacion.controller;
 
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
+import com.talleresdeprogramacion.dto.ClientDTO;
 import com.talleresdeprogramacion.model.Client;
 import com.talleresdeprogramacion.service.ClientService;
-import lombok.RequiredArgsConstructor;
+import org.cloudinary.json.JSONObject;
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.io.File;
+import java.io.IOException;
 import java.net.URI;
+import java.nio.file.Files;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/clients")
-@RequiredArgsConstructor
 public class ClientController {
 
     private final ClientService clientService;
+    
+    private final ModelMapper modelMapper;
+
+    private final Cloudinary cloudinary;
+
+    public ClientController(ClientService clientService, @Qualifier("clientMapper") ModelMapper modelMapper, Cloudinary cloudinary) {
+        this.clientService = clientService;
+        this.modelMapper = modelMapper;
+        this.cloudinary = cloudinary;
+    }
 
     //ServerHtppRequest
 
@@ -93,5 +112,41 @@ public class ClientController {
         return clientService.delete(id);
     }
 
+
+
+    @PostMapping("/{id}")
+    public Mono<ResponseEntity<ClientDTO>> uploadV1(@PathVariable("id") String id,
+                                                    @RequestPart("file")FilePart filePart){
+        return clientService.findById(id)
+                .flatMap(client -> {
+                    try {
+                        File f = Files.createTempFile("temp",filePart.filename()).toFile();
+                        filePart.transferTo(f).block();
+
+                        Map<String, Object> response = cloudinary.uploader().upload(f,
+                                ObjectUtils.asMap("resource_type","auto"));
+
+                        JSONObject jsonObject = new JSONObject(response);
+                        String url = jsonObject.getString("url");
+
+                        client.setUrlPhoto(url);
+
+                        return clientService.update(id,client)
+                                .map(this::convertToDto)
+                                .map( e -> ResponseEntity.ok().body(e));
+
+                    }catch (IOException e){
+                        return Mono.just(ResponseEntity.badRequest().build());
+                    }
+                });
+
+    }
+    private ClientDTO convertToDto(Client model){
+        return modelMapper.map(model, ClientDTO.class);
+    }
+
+    private Client convertToDocument(ClientDTO dto){
+        return modelMapper.map(dto, Client.class);
+    }
 
 }

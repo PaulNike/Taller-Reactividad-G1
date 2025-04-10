@@ -61,6 +61,12 @@
 			<version>1.33.0</version>
 		</dependency>
 
+		<dependency>
+			<groupId>net.sf.jasperreports</groupId>
+			<artifactId>jasperreports</artifactId>
+			<version>6.18.0</version>
+		</dependency>
+
 	</dependencies>
 
 	<build>
@@ -90,6 +96,15 @@
 					</excludes>
 				</configuration>
 			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>3.1.2</version>
+				<configuration>
+					<argLine>--add-exports=java.xml/com.sun.org.apache.xerces.internal.util=ALL-UNNAMED</argLine>
+				</configuration>
+			</plugin>
+
 		</plugins>
 	</build>
 

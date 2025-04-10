@@ -21,9 +21,9 @@ public class DishDTO {
     //@Max(value = 999, message = "El valor debe ser inferior o igual a 999")
     @DecimalMin(value = "0.5")
     @DecimalMax(value = "999.99")
-    private double priceDishes;
+    private Double priceDishes;
     @NotNull
-    private boolean statusDishes;
+    private Boolean statusDishes;
     @NotNull
     @Email
     private String email;

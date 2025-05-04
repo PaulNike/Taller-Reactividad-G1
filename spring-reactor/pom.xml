@@ -14,7 +14,7 @@
 	<name>spring-reactor</name>
 	<description>Proyecto para conocer y manejar las apis reactivas</description>
 	<properties>
-		<java.version>21</java.version>
+		<java.version>22</java.version>
 	</properties>
 	<dependencies>
 		<dependency>

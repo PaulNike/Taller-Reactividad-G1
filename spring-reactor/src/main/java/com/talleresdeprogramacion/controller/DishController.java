@@ -12,6 +12,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.reactive.function.server.RouterFunctions;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -20,6 +21,11 @@ import java.net.URI;
 @RestController
 @RequestMapping("/dishes")
 public class DishController {
+
+    //RouterFunctions
+
+    //HANDLER
+    //ROUTER
 
     private final DishService dishService;
 

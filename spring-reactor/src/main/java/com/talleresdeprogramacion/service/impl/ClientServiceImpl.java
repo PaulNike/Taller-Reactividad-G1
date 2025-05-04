@@ -16,11 +16,18 @@ public class ClientServiceImpl extends GenericCrudImpl<Client, String> implement
     private final ClientRepository clientRepository;
 
     @Override
-    protected GenericRepository<Client, String> getRepository() {
-        return clientRepository;
-    }
-    @Override
     public Mono<Client> findByName(String string) {
         return clientRepository.findByFirstName(string);
+    }
+
+    /*@Override
+    public Mono<Client> save(Client client) {
+        //Unica y exclusivamente seria un caso excepcional de validación qeu solo aplica a CLient
+        return super.save(client);
+    }
+*/
+    @Override
+    protected GenericRepository<Client, String> getRepository() {
+        return clientRepository;
     }
 }

@@ -2,10 +2,12 @@ package com.talleresdeprogramacion.controller;
 
 import com.talleresdeprogramacion.dto.DishDTO;
 import com.talleresdeprogramacion.model.Dish;
+import com.talleresdeprogramacion.pagination.PageSupport;
 import com.talleresdeprogramacion.service.DishService;
 import jakarta.validation.Valid;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.server.reactive.ServerHttpRequest;
@@ -20,6 +22,7 @@ import java.net.URI;
 public class DishController {
 
     private final DishService dishService;
+
 
     private final ModelMapper modelMapper;
 
@@ -91,6 +94,26 @@ public class DishController {
                         return Mono.just(ResponseEntity.notFound().build());
                     }
                 });
+    }
+
+    @CrossOrigin(origins = "http://127.0.0.1:5500")
+    @GetMapping("/pageable")
+    public Mono<ResponseEntity<PageSupport<DishDTO>>> getPage(
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "2") int size
+    ){
+        return dishService.getPage(PageRequest.of(page,size))
+                .map(dishPageSupport -> new PageSupport<>(
+                        dishPageSupport.getContent().stream().map(this::convertToDto).toList(),
+                        dishPageSupport.getPageNumber(),
+                        dishPageSupport.getPageSize(),
+                        dishPageSupport.getTotalElements()
+                ))
+                .map(e -> ResponseEntity.ok()
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .body(e))
+                .defaultIfEmpty(ResponseEntity.notFound().build());
+
     }
 
     private DishDTO convertToDto(Dish model){
